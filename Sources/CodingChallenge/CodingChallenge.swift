@@ -25,6 +25,7 @@ public func calculatePositions(input: Input) throws -> String {
     return try input.lines
         .dropFirst()
         .split(whereSeparator: { $0.isEmpty })
+        .map(Array.init)
         .map { lines -> RobotPosition in
             guard lines.count == 2 else { throw IncorrectParameterCount(count: lines.count) }
             let initial = try RobotPosition(rawValue: lines[0])
