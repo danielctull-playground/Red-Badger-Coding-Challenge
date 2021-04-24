@@ -10,7 +10,7 @@ public func calculatePositions(input: Input) throws -> String {
     let topRight = try input
         .lines
         .first
-        .map(Position2D.init(rawValue:))
+        .map(Position.init)
         .unwrapped()
 
     // Used to store the set of lost robots that can be passed into the Robot's
@@ -37,17 +37,38 @@ public func calculatePositions(input: Input) throws -> String {
         .joined(separator: "\n")
 }
 
-struct Robot: Hashable {
+// MARK: - Instruction
+
+private enum Instruction: Character {
+    case left = "L"
+    case right = "R"
+    case forward = "F"
+}
+
+
+// MARK: - Robot
+
+private struct Robot: Hashable {
     var position: Position2D<Int>
     var heading: Vector2D<Int>
     var isLost = false
+}
+
+extension Robot {
 
     mutating func move(alreadyLost: inout Set<Robot>, topRight: Position2D<Int>) {
+
+        func isOff(position: Position2D<Int>) -> Bool {
+            position.x < 0
+                || position.y < 0
+                || position.x > topRight.x
+                || position.y > topRight.y
+        }
 
         // If it's lost don't move…
         guard !isLost else { return }
 
-        guard !topRight.isOff(position: position + heading) else {
+        guard !isOff(position: position + heading) else {
             // A little trickery here is to add the robots to the alreadyLost
             // set when isLost is false to make the contains work.
             if alreadyLost.contains(self) {
@@ -85,22 +106,17 @@ extension Robot {
     init<S: StringProtocol>(rawValue: S) throws {
         let split = rawValue.split(separator: " ")
         guard split.count == 3 else { throw IncorrectParameterCount(count: split.count) }
-        let position = try Position2D(x: Int(split[0]), y: Int(split[1]))
-        let heading = try Vector2D(rawValue: split[2])
+        let position = try Position(x: Int(split[0]), y: Int(split[1]))
+        let heading = try Vector(rawValue: split[2])
         self.init(position: position, heading: heading)
     }
 }
 
-extension Position2D where Space == Dimension2<Int> {
+// MARK: - Position Initialiser
 
-    func isOff(position: Position2D<Int>) -> Bool {
-        position.x < 0
-            || position.y < 0
-            || position.x > self.x
-            || position.y > self.y
-    }
+extension Position where Space == Dimension2<Int> {
 
-    init(rawValue: String) throws {
+    fileprivate init(rawValue: String) throws {
         let split = rawValue.split(separator: " ")
         guard split.count == 2 else { throw IncorrectParameterCount(count: split.count) }
         let x = try Int(split[0])
@@ -109,10 +125,12 @@ extension Position2D where Space == Dimension2<Int> {
     }
 }
 
+// MARK: - Vector Initialiser
+
 struct DirectionError: Error {}
 extension Vector where Space == Dimension2<Int> {
 
-    init<S: StringProtocol>(rawValue: S) throws {
+    fileprivate init<S: StringProtocol>(rawValue: S) throws {
         switch rawValue {
         case "N": self = .north
         case "E": self = .east
@@ -121,10 +139,4 @@ extension Vector where Space == Dimension2<Int> {
         default: throw DirectionError()
         }
     }
-}
-
-enum Instruction: Character {
-    case left = "L"
-    case right = "R"
-    case forward = "F"
 }
