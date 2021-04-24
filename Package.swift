@@ -13,8 +13,20 @@ let package = Package(
     products: [
         .library(name: "CodingChallenge", targets: ["CodingChallenge"]),
     ],
+    dependencies: [
+        .package(name: "Advent of Code", url: "https://github.com/danielctull/Advent-of-Code", .branch("main")),
+    ],
     targets: [
-        .target(name: "CodingChallenge"),
-        .testTarget(name: "CodingChallengeTests", dependencies: ["CodingChallenge"]),
+        .target(
+            name: "CodingChallenge",
+            dependencies: [
+                .product(name: "Advent", package: "Advent of Code"),
+            ]),
+        .testTarget(
+            name: "CodingChallengeTests",
+            dependencies: [
+                .product(name: "Advent", package: "Advent of Code"),
+                "CodingChallenge"
+            ]),
     ]
 )
