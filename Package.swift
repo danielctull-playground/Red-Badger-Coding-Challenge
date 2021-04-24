@@ -11,10 +11,10 @@ let package = Package(
         .watchOS(.v7),
     ],
     products: [
-        .library(name: "Red-Badger-Coding-Challenge", targets: ["Red-Badger-Coding-Challenge"]),
+        .library(name: "CodingChallenge", targets: ["CodingChallenge"]),
     ],
     targets: [
-        .target(name: "Red-Badger-Coding-Challenge"),
-        .testTarget(name: "Red-Badger-Coding-ChallengeTests", dependencies: ["Red-Badger-Coding-Challenge"]),
+        .target(name: "CodingChallenge"),
+        .testTarget(name: "CodingChallengeTests", dependencies: ["CodingChallenge"]),
     ]
 )
