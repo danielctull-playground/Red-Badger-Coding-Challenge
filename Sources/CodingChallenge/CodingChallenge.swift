@@ -7,32 +7,27 @@ struct IncorrectParameterCount: Error {
 
 public func calculatePositions(input: Input) throws -> String {
 
-    let upperRightPosition = try input
+    let topRight = try input
         .lines
         .first
         .map(Position2D.init(rawValue:))
         .unwrapped()
 
-    func isOff(position: Position2D<Int>) -> Bool {
-        position.x < 0
-            || position.y < 0
-            || position.x > upperRightPosition.x
-            || position.y > upperRightPosition.y
-    }
-
+    // Used to store the set of lost robots that can be passed into the Robot's
+    // move function.
     var lost: Set<RobotPosition> = []
 
     return try input.lines
         .dropFirst()
         .split(whereSeparator: { $0.isEmpty })
         .map(Array.init)
-        .map { lines -> RobotPosition in
+        .map { lines -> RobotPosition in // Find the last position of each of the robots.
             guard lines.count == 2 else { throw IncorrectParameterCount(count: lines.count) }
             let initial = try RobotPosition(rawValue: lines[0])
             let instructions: [Instruction] = try lines[1].map(Instruction.init)
             return instructions.reduce(into: initial) { robot, instruction in
                 switch instruction {
-                case .forward: robot.move(lost: lost)
+                case .forward: robot.move(alreadyLost: &lost, topRight: topRight)
                 case .left: robot.heading.transform(.rotate270)
                 case .right: robot.heading.transform(.rotate90)
                 }
@@ -45,9 +40,25 @@ public func calculatePositions(input: Input) throws -> String {
 struct RobotPosition: Hashable {
     var position: Position2D<Int>
     var heading: Vector2D<Int>
+    var isLost = false
 
-    mutating func move(lost: Set<RobotPosition>) {
-        guard !lost.contains(self) else { return }
+    mutating func move(alreadyLost: inout Set<RobotPosition>, topRight: Position2D<Int>) {
+
+        // If it's lost don't move…
+        guard !isLost else { return }
+
+        guard !topRight.isOff(position: position + heading) else {
+            // A little trickery here is to add the robots to the alreadyLost
+            // set when isLost is false to make the contains work.
+            if alreadyLost.contains(self) {
+                return
+            } else {
+                alreadyLost.insert(self)
+                isLost = true
+                return
+            }
+        }
+
         position += heading
     }
 }
@@ -63,8 +74,9 @@ extension RobotPosition: CustomStringConvertible {
         case .west: headingDescription = "W"
         default: fatalError()
         }
+        let lostDescription = isLost ? " LOST" : ""
 
-        return "\(position.x) \(position.y) \(headingDescription)"
+        return "\(position.x) \(position.y) \(headingDescription)\(lostDescription)"
     }
 }
 
@@ -80,6 +92,13 @@ extension RobotPosition {
 }
 
 extension Position2D where Space == Dimension2<Int> {
+
+    func isOff(position: Position2D<Int>) -> Bool {
+        position.x < 0
+            || position.y < 0
+            || position.x > self.x
+            || position.y > self.y
+    }
 
     init(rawValue: String) throws {
         let split = rawValue.split(separator: " ")
