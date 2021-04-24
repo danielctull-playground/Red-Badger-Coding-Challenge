@@ -27,6 +27,9 @@ let package = Package(
             dependencies: [
                 .product(name: "Advent", package: "Advent of Code"),
                 "CodingChallenge"
+            ],
+            resources: [
+                .copy("Inputs")
             ]),
     ]
 )
