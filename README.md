@@ -1,5 +1,21 @@
 # Red Badger Coding Challenge
 
+## Running the Code
+
+ Requires Swift 5.3 to be installed.
+ 
+ Clone the repository and at the root of the project run the following command, replacing [input file] with the relative path of the file you wish to run the program against.
+
+``` sh
+swift run CodingChallengeTool [input file]
+```
+
+For example to run the tool with the sample input, run the following command:
+
+``` sh
+swift run CodingChallengeTool Tests/CodingChallengeTests/Inputs/Instructions.txt
+```
+
 ## The Problem 
 
 The surface of Mars can be modelled by a rectangular grid around which robots are able to move according to instructions provided from Earth. You are to write a program that determines each sequence of robot positions and reports the final position of the robot.
