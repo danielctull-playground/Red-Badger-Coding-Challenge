@@ -3,7 +3,7 @@
 ## Running the Code
 
  Requires Swift 5.3 to be installed.
- 
+
  Clone the repository and at the root of the project run the following command, replacing [input file] with the relative path of the file you wish to run the program against.
 
 ``` sh
@@ -15,6 +15,12 @@ For example to run the tool with the sample input, run the following command:
 ``` sh
 swift run CodingChallengeTool Tests/CodingChallengeTests/Inputs/Instructions.txt
 ```
+
+## A Note on Dependencies
+
+This uses the Advent library from my own [Advent of Code](https://github.com/danielctull/Advent-of-Code) package for its geometric operations with the `Position` and `Vector` types and for parsing input files.
+
+I also use Apple's [ArgumentParser](https://github.com/apple/swift-argument-parser.git) library to make the command line tool.
 
 ## The Problem 
 
