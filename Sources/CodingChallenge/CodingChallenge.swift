@@ -15,15 +15,15 @@ public func calculatePositions(input: Input) throws -> String {
 
     // Used to store the set of lost robots that can be passed into the Robot's
     // move function.
-    var lost: Set<RobotPosition> = []
+    var lost: Set<Robot> = []
 
     return try input.lines
         .dropFirst()
         .split(whereSeparator: { $0.isEmpty })
         .map(Array.init)
-        .map { lines -> RobotPosition in // Find the last position of each of the robots.
+        .map { lines -> Robot in // Find the last position of each of the robots.
             guard lines.count == 2 else { throw IncorrectParameterCount(count: lines.count) }
-            let initial = try RobotPosition(rawValue: lines[0])
+            let initial = try Robot(rawValue: lines[0])
             let instructions: [Instruction] = try lines[1].map(Instruction.init)
             return instructions.reduce(into: initial) { robot, instruction in
                 switch instruction {
@@ -37,12 +37,12 @@ public func calculatePositions(input: Input) throws -> String {
         .joined(separator: "\n")
 }
 
-struct RobotPosition: Hashable {
+struct Robot: Hashable {
     var position: Position2D<Int>
     var heading: Vector2D<Int>
     var isLost = false
 
-    mutating func move(alreadyLost: inout Set<RobotPosition>, topRight: Position2D<Int>) {
+    mutating func move(alreadyLost: inout Set<Robot>, topRight: Position2D<Int>) {
 
         // If it's lost don't move…
         guard !isLost else { return }
@@ -63,7 +63,7 @@ struct RobotPosition: Hashable {
     }
 }
 
-extension RobotPosition: CustomStringConvertible {
+extension Robot: CustomStringConvertible {
 
     var description: String {
         let headingDescription: String
@@ -80,7 +80,7 @@ extension RobotPosition: CustomStringConvertible {
     }
 }
 
-extension RobotPosition {
+extension Robot {
 
     init<S: StringProtocol>(rawValue: S) throws {
         let split = rawValue.split(separator: " ")
