@@ -104,7 +104,7 @@ extension Robot: CustomStringConvertible {
 extension Robot {
 
     init<S: StringProtocol>(rawValue: S) throws {
-        let split = rawValue.split(separator: " ")
+        let split = rawValue.split(whereSeparator: \.isWhitespace)
         guard split.count == 3 else { throw IncorrectParameterCount(count: split.count) }
         let position = try Position(x: Int(split[0]), y: Int(split[1]))
         let heading = try Vector(rawValue: split[2])
@@ -117,7 +117,7 @@ extension Robot {
 extension Position where Space == Dimension2<Int> {
 
     fileprivate init(rawValue: String) throws {
-        let split = rawValue.split(separator: " ")
+        let split = rawValue.split(whereSeparator: \.isWhitespace)
         guard split.count == 2 else { throw IncorrectParameterCount(count: split.count) }
         let x = try Int(split[0])
         let y = try Int(split[1])
